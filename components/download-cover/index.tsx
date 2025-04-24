@@ -1,11 +1,20 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 export default function DownloadCover() {
-  const imgSrc = typeof window === "undefined" ? "" : sessionStorage.getItem("cover") || "";
+  const [imgSrc, setImgSrc] = useState<string>("");
 
-  console.log("imgSrc", imgSrc);
+  useEffect(() => {
+    const saved = sessionStorage.getItem("cover");
+    if (saved) {
+      setImgSrc(saved);
+    }
+  }, []);
+
+  if (!imgSrc) {
+    return <p>No image yet.</p>;
+  }
   return (
     <>
       <div>

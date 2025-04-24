@@ -1,50 +1,21 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import Draggable from "react-draggable";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { StyleState } from "@/models";
 import html2canvas from "html2canvas-pro";
 import { useRouter } from "next/navigation";
-
-function DraggableText({
-  type,
-  text,
-  ref,
-  setActiveText,
-  style,
-}: {
-  type: "title" | "author";
-  text: string;
-  ref: React.Ref<HTMLDivElement>;
-  setActiveText: () => void;
-  style: StyleState;
-}) {
-  return (
-    <Draggable nodeRef={ref as React.RefObject<HTMLElement>}>
-      <div
-        ref={ref}
-        onClick={setActiveText}
-        className="absolute cursor-move"
-        style={{
-          top: type === "title" ? 20 : 100,
-          left: 20,
-          fontSize: `${style.fontSize}px`,
-          color: style.color,
-          letterSpacing: `${style.letterSpacing}px`,
-        }}
-      >
-        {text}
-      </div>
-    </Draggable>
-  );
-}
+import DraggableText from "../draggable-text";
 
 export default function ChooseCover({ book }: { book?: string }) {
-  const [imgSrc, setImgSrc] = useState<string>("");
   const router = useRouter();
+  const existingTitleStyle = JSON.parse(sessionStorage.getItem("titleDragStyle") || "{}");
+  const existingAuthorStyle = JSON.parse(sessionStorage.getItem("authorDragStyle") || "{}");
+  const existingImage = sessionStorage.getItem("image");
+  const [imgSrc, setImgSrc] = useState<string>(existingImage || "");
   const [titleText, authorText] = book?.split(";") ?? ["", ""];
   const [activeText, setActiveText] = useState<"title" | "author">("title");
   const [titleStyle, setTitleStyle] = useState<StyleState>({
@@ -58,6 +29,20 @@ export default function ChooseCover({ book }: { book?: string }) {
     letterSpacing: 0,
   });
 
+  useEffect(() => {
+    sessionStorage.setItem(
+      "titleDragStyle",
+      JSON.stringify({ ...existingTitleStyle, style: titleStyle })
+    );
+  }, [titleStyle]);
+
+  useEffect(() => {
+    sessionStorage.setItem(
+      "authorDragStyle",
+      JSON.stringify({ ...existingAuthorStyle, style: authorStyle })
+    );
+  }, [authorStyle]);
+
   const overlayRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
   const authorRef = useRef<HTMLDivElement>(null);
@@ -66,7 +51,11 @@ export default function ChooseCover({ book }: { book?: string }) {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = ev => setImgSrc(ev.target!.result as string);
+    reader.onload = ev => {
+      const dataURL = ev.target?.result as string;
+      setImgSrc(dataURL);
+      sessionStorage.setItem("image", dataURL);
+    };
     reader.readAsDataURL(file);
   };
 
@@ -74,7 +63,6 @@ export default function ChooseCover({ book }: { book?: string }) {
     const el = overlayRef.current;
     if (!el) return;
 
-    // Ölçüleri alarak fazla beyaz alanı kes
     const width = el.scrollWidth;
     const height = el.scrollHeight;
 
@@ -84,10 +72,9 @@ export default function ChooseCover({ book }: { book?: string }) {
         height,
         useCORS: true,
         allowTaint: false,
-        scale: 2,
+        scale: 1,
       });
       const imgData = canvas.toDataURL("image/png");
-      console.log("Generated Base64 image:\n", imgData);
       sessionStorage.setItem("cover", imgData);
       router.push("/preview");
     } catch (err) {
@@ -165,6 +152,11 @@ export default function ChooseCover({ book }: { book?: string }) {
               setActiveText={() => setActiveText("title")}
               style={titleStyle}
               ref={titleRef}
+              defaultPosition={
+                !!existingTitleStyle.x && !!existingTitleStyle.y
+                  ? { x: existingTitleStyle.x, y: existingTitleStyle.y }
+                  : undefined
+              }
             />
 
             <DraggableText
@@ -173,13 +165,18 @@ export default function ChooseCover({ book }: { book?: string }) {
               setActiveText={() => setActiveText("author")}
               style={authorStyle}
               ref={authorRef}
+              defaultPosition={
+                !!existingAuthorStyle.x && !!existingAuthorStyle.y
+                  ? { x: existingAuthorStyle.x, y: existingAuthorStyle.y }
+                  : undefined
+              }
             />
           </div>
         </div>
       )}
 
       <div className="mt-4">
-        <Button onClick={handleSave}>Save & Next</Button>
+        <Button onClick={handleSave}>Next</Button>
       </div>
     </>
   );

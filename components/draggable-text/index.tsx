@@ -1,5 +1,5 @@
 import { StyleState } from "@/models";
-import Draggable from "react-draggable";
+import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
 
 export default function DraggableText({
   type,
@@ -7,15 +7,25 @@ export default function DraggableText({
   ref,
   setActiveText,
   style,
+  defaultPosition,
 }: {
   type: "title" | "author";
   text: string;
   ref: React.Ref<HTMLDivElement>;
   setActiveText: () => void;
   style: StyleState;
+  defaultPosition?: { x: number; y: number };
 }) {
+  const handleDrag = (e: DraggableEvent, ui: DraggableData) => {
+    const { x, y } = ui;
+    sessionStorage.setItem(`${type}DragStyle`, JSON.stringify({ x, y, style }));
+  };
   return (
-    <Draggable nodeRef={ref as React.RefObject<HTMLElement>}>
+    <Draggable
+      defaultPosition={defaultPosition}
+      nodeRef={ref as React.RefObject<HTMLElement>}
+      onStop={(e, ui) => handleDrag(e, ui)}
+    >
       <div
         ref={ref}
         onClick={setActiveText}

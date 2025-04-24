@@ -2,11 +2,12 @@
 import React, { useRef, useState } from "react";
 import Image from "next/image";
 import Draggable from "react-draggable";
-import html2canvas from "html2canvas";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { StyleState } from "@/models";
+import html2canvas from "html2canvas-pro";
+import { useRouter } from "next/navigation";
 
 function DraggableText({
   type,
@@ -43,7 +44,7 @@ function DraggableText({
 
 export default function ChooseCover({ book }: { book?: string }) {
   const [imgSrc, setImgSrc] = useState<string>("");
-
+  const router = useRouter();
   const [titleText, authorText] = book?.split(";") ?? ["", ""];
   const [activeText, setActiveText] = useState<"title" | "author">("title");
   const [titleStyle, setTitleStyle] = useState<StyleState>({
@@ -70,11 +71,28 @@ export default function ChooseCover({ book }: { book?: string }) {
   };
 
   const handleSave = async () => {
-    if (!overlayRef.current) return;
-    const canvas = await html2canvas(overlayRef.current, { useCORS: true });
-    const dataUrl = canvas.toDataURL("image/png");
-    const w = window.open("");
-    w?.document.write(`<img src=\"${dataUrl}\" />`);
+    const el = overlayRef.current;
+    if (!el) return;
+
+    // Ölçüleri alarak fazla beyaz alanı kes
+    const width = el.scrollWidth;
+    const height = el.scrollHeight;
+
+    try {
+      const canvas = await html2canvas(el, {
+        width,
+        height,
+        useCORS: true,
+        allowTaint: false,
+        scale: 2,
+      });
+      const imgData = canvas.toDataURL("image/png");
+      console.log("Generated Base64 image:\n", imgData);
+      sessionStorage.setItem("cover", imgData);
+      router.push("/preview");
+    } catch (err) {
+      console.error("Error generating canvas:", err);
+    }
   };
 
   return (
@@ -84,7 +102,7 @@ export default function ChooseCover({ book }: { book?: string }) {
       </div>
 
       {imgSrc && (
-        <div className="flex gap-4 h-[451px]">
+        <div className="flex gap-4">
           <div className="w-1/3">
             <div className="flex flex-col gap-2 p-2 border rounded">
               <h3 className="font-semibold mb-2">
@@ -134,7 +152,11 @@ export default function ChooseCover({ book }: { book?: string }) {
             </div>
           </div>
 
-          <div ref={overlayRef} className="relative w-2/3 border">
+          <div
+            ref={overlayRef}
+            className="relative inline-block"
+            style={{ border: "1px solid #ccc", overflow: "hidden" }}
+          >
             <Image src={imgSrc} alt="cover" width={450} height={384} className="block" />
 
             <DraggableText
@@ -157,7 +179,7 @@ export default function ChooseCover({ book }: { book?: string }) {
       )}
 
       <div className="mt-4">
-        <Button onClick={handleSave}>Save &amp; Next</Button>
+        <Button onClick={handleSave}>Save & Next</Button>
       </div>
     </>
   );

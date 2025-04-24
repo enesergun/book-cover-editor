@@ -1,5 +1,4 @@
 import React from "react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -8,25 +7,32 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { SimplifiedBook } from "@/models";
+import { selectBook } from "@/actions/actions";
 
-export default function SelectBook() {
+export default function SelectBook({ books }: { books: SimplifiedBook[] }) {
   return (
-    <>
+    <form
+      action={selectBook}
+      className="h-96 w-full mx-auto flex flex-col justify-center items-center"
+    >
       <div className="h-96 w-full mx-auto flex flex-col justify-center items-center">
         <Select>
           <SelectTrigger className="w-3/7">
             <SelectValue placeholder="Select book to edit cover page" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="light">Light</SelectItem>
-            <SelectItem value="dark">Dark</SelectItem>
-            <SelectItem value="system">System</SelectItem>
+            {books.map(book => (
+              <SelectItem key={`index_${book.title}`} value={`${book.title};${book.author}`}>
+                <input type="hidden" name="book" value={book.title} />
+                <input type="hidden" name="author" value={book.author} />
+                {book.title} by {book.author}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
-      <Button>
-        <Link href="/edit-cover">Next</Link>
-      </Button>
-    </>
+      <Button type="submit">Next</Button>
+    </form>
   );
 }

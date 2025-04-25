@@ -51,6 +51,8 @@ export interface SimplifiedBook {
   author: string;
 }
 export interface StyleState {
+  x?: number;
+  y?: number;
   fontSize: number;
   color: string;
   letterSpacing: number;

@@ -4,15 +4,15 @@ import Link from "next/link";
 
 export default function Navigation() {
   return (
-    <div className="flex  gap-4 w-full mx-auto justify-center mt-7">
+    <div className="flex flex-col md:flex-row items-center gap-4 w-full mx-auto justify-center mt-7 ">
       <Link href="/">
-        <Button>Choose Book</Button>
+        <Button className="w-40">Choose Book</Button>
       </Link>
       <Link href="/edit-cover">
-        <Button>Edit Cover</Button>
+        <Button className="w-40">Edit Cover</Button>
       </Link>
       <Link href="/preview">
-        <Button>Preview & Download</Button>
+        <Button className="w-40">Preview & Download</Button>
       </Link>
     </div>
   );

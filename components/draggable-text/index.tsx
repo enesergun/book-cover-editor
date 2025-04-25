@@ -18,7 +18,16 @@ export default function DraggableText({
 }) {
   const handleDrag = (e: DraggableEvent, ui: DraggableData) => {
     const { x, y } = ui;
-    sessionStorage.setItem(`${type}DragStyle`, JSON.stringify({ x, y, style }));
+    sessionStorage.setItem(
+      `${type}DragStyle`,
+      JSON.stringify({
+        x,
+        y,
+        fontSize: style.fontSize,
+        color: style.color,
+        letterSpacing: style.letterSpacing,
+      })
+    );
   };
   return (
     <Draggable

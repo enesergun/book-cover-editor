@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <h1 className="text-4xl font-bold text-center">Book Cover Editor</h1>
+        <h1 className="text-4xl font-bold text-center mt-8">Book Cover Editor</h1>
         <Navigation />
         <main className="flex flex-col justify-center items-center mt-20">{children}</main>
       </body>

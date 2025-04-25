@@ -12,34 +12,42 @@ import DraggableText from "../draggable-text";
 
 export default function ChooseCover({ book }: { book?: string }) {
   const router = useRouter();
-  const existingTitleStyle = JSON.parse(sessionStorage.getItem("titleDragStyle") || "{}");
-  const existingAuthorStyle = JSON.parse(sessionStorage.getItem("authorDragStyle") || "{}");
+
+  const initialTitleStyle = sessionStorage.getItem("titleDragStyle")
+    ? JSON.parse(sessionStorage.getItem("titleDragStyle") ?? "{}")
+    : { fontSize: 32, color: "#ffffff", letterSpacing: 0 };
+  const initialAuthorStyle = sessionStorage.getItem("authorDragStyle")
+    ? JSON.parse(sessionStorage.getItem("authorDragStyle") ?? "{}")
+    : { fontSize: 24, color: "#ffffff", letterSpacing: 0 };
   const existingImage = sessionStorage.getItem("image");
-  const [imgSrc, setImgSrc] = useState<string>(existingImage || "");
+
+  const [imgSrc, setImgSrc] = useState<string>(existingImage ?? "");
   const [titleText, authorText] = book?.split(";") ?? ["", ""];
   const [activeText, setActiveText] = useState<"title" | "author">("title");
-  const [titleStyle, setTitleStyle] = useState<StyleState>({
-    fontSize: 32,
-    color: "#ffffff",
-    letterSpacing: 0,
-  });
-  const [authorStyle, setAuthorStyle] = useState<StyleState>({
-    fontSize: 24,
-    color: "#ffffff",
-    letterSpacing: 0,
-  });
+  const [titleStyle, setTitleStyle] = useState<StyleState>(initialTitleStyle);
+  const [authorStyle, setAuthorStyle] = useState<StyleState>(initialAuthorStyle);
 
   useEffect(() => {
     sessionStorage.setItem(
       "titleDragStyle",
-      JSON.stringify({ ...existingTitleStyle, style: titleStyle })
+      JSON.stringify({
+        ...initialTitleStyle,
+        fontSize: titleStyle.fontSize,
+        color: titleStyle.color,
+        letterSpacing: titleStyle.letterSpacing,
+      })
     );
   }, [titleStyle]);
 
   useEffect(() => {
     sessionStorage.setItem(
       "authorDragStyle",
-      JSON.stringify({ ...existingAuthorStyle, style: authorStyle })
+      JSON.stringify({
+        ...initialAuthorStyle,
+        fontSize: authorStyle.fontSize,
+        color: authorStyle.color,
+        letterSpacing: authorStyle.letterSpacing,
+      })
     );
   }, [authorStyle]);
 
@@ -89,8 +97,8 @@ export default function ChooseCover({ book }: { book?: string }) {
       </div>
 
       {imgSrc && (
-        <div className="flex gap-4">
-          <div className="w-1/3">
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="w-full md:w-1/3">
             <div className="flex flex-col gap-2 p-2 border rounded">
               <h3 className="font-semibold mb-2">
                 {activeText === "title" ? "Title Styles" : "Author Styles"}
@@ -153,8 +161,8 @@ export default function ChooseCover({ book }: { book?: string }) {
               style={titleStyle}
               ref={titleRef}
               defaultPosition={
-                !!existingTitleStyle.x && !!existingTitleStyle.y
-                  ? { x: existingTitleStyle.x, y: existingTitleStyle.y }
+                !!initialTitleStyle.x && !!initialTitleStyle.y
+                  ? { x: initialTitleStyle.x, y: initialTitleStyle.y }
                   : undefined
               }
             />
@@ -166,8 +174,8 @@ export default function ChooseCover({ book }: { book?: string }) {
               style={authorStyle}
               ref={authorRef}
               defaultPosition={
-                !!existingAuthorStyle.x && !!existingAuthorStyle.y
-                  ? { x: existingAuthorStyle.x, y: existingAuthorStyle.y }
+                !!initialAuthorStyle.x && !!initialAuthorStyle.y
+                  ? { x: initialAuthorStyle.x, y: initialAuthorStyle.y }
                   : undefined
               }
             />
@@ -176,7 +184,7 @@ export default function ChooseCover({ book }: { book?: string }) {
       )}
 
       <div className="mt-4">
-        <Button onClick={handleSave}>Next</Button>
+        <Button onClick={handleSave}>Save & Next</Button>
       </div>
     </>
   );

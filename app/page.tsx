@@ -12,7 +12,6 @@ export default async function Home() {
   )
     .then(res => res.json())
     .then((data: NYTBookApiResponse) => {
-      //
       return data.results.map(book => {
         return {
           title: book.book_details[0]?.title,

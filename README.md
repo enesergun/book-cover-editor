@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Book Cover Customizer
+
+A dynamic Next.js application that fetches New York Times bestseller books and lets users create and customize book cover images with draggable title and author text, preview, and download.
+
+## Features
+
+- Fetch top hardcover fiction books from the New York Times API.
+- Select a book (title and author).
+- Upload a custom image for the cover.
+- Add and position title and author text on the image.
+- Customize text style: font size, color, and letter spacing.
+- Save the customized cover and preview it.
+- Download the final cover as a PNG file.
+
+## Tech Stack
+
+- Next.js 13 (App Router)
+- React & TypeScript
+- Tailwind CSS
+- html2canvas-pro
+- react-draggable
+- New York Times Books API
+- Next.js Server Actions for form handling
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js (>=14)
+- Yarn or npm
+
+### Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/yourusername/dev-challenge-growth-frontend.git
+cd dev-challenge-growth-frontend
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+yarn install
+# or
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Create a `.env.local` file in the project root and add your New York Times API key:
+```
+API_KEY=YOUR_NYT_API_KEY
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Running the Development Server
 
-## Learn More
+```bash
+yarn dev
+# or
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Open http://localhost:3000 in your browser.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Usage
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Choose a book from the fetched NYT bestseller list.
+2. Upload a base image for the cover.
+3. Click on the title or author text to activate style controls.
+4. Drag the title and author text to position them on the cover.
+5. Adjust font size, color, and letter spacing.
+6. Save and proceed to preview.
+7. Download the final cover as a PNG.
 
-## Deploy on Vercel
+## Project Structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+.
+├── app
+│   ├── page.tsx            # Home page (book selection)
+│   ├── edit-cover/page.tsx # Cover editing page
+│   └── preview/page.tsx    # Preview and download page
+├── components              # Reusable React components
+├── models                  # TypeScript models and interfaces
+├── actions                 # Next.js server actions
+└── lib                     # Utility functions
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+
+This project is private.
